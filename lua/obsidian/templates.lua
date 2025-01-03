@@ -44,10 +44,12 @@ end
 ---@param text string
 ---@param client obsidian.Client
 ---@param note obsidian.Note
+---@param methods table<string, string|function>|?
+---
 ---
 ---@return string
-M.substitute_template_variables = function(text, client, note)
-  local methods = vim.deepcopy(client.opts.templates.substitutions or {})
+M.substitute_template_variables = function(text, client, note, methods)
+  methods = methods or vim.deepcopy(client.opts.templates.substitutions or {})
 
   if not methods["date"] then
     methods["date"] = function()
@@ -91,10 +93,20 @@ M.substitute_template_variables = function(text, client, note)
     end
   end
 
-  -- Find unknown variables and prompt for them.
+  -- Replace variables
   for m_start, m_end in util.gfind(text, "{{[^}]+}}") do
     local key = util.strip_whitespace(string.sub(text, m_start + 2, m_end - 2))
-    local value = util.input(string.format("Enter value for '%s' (<cr> to skip): ", key))
+    if methods[key] == nil then
+      methods[key] = util.input(string.format("Enter value for '%s' (<cr> to skip): ", key))
+    end
+
+    local value
+    if type(methods[key]) == "function" then
+      value = methods[key]()
+    else
+      value = methods[key]
+    end
+
     if value and string.len(value) > 0 then
       text = string.sub(text, 1, m_start - 1) .. value .. string.sub(text, m_end + 1)
     end
@@ -102,7 +114,6 @@ M.substitute_template_variables = function(text, client, note)
 
   return text
 end
-
 --- Clone template to a new note.
 ---
 ---@param opts { template_name: string|obsidian.Path, path: obsidian.Path|string, client: obsidian.Client, note: obsidian.Note } Options.
@@ -124,8 +135,9 @@ M.clone_template = function(opts)
     error(string.format("Unable to write note at '%s': %s", note_path, tostring(write_err)))
   end
 
+  local methods = vim.deepcopy(opts.client.opts.templates.substitutions or {})
   for line in template_file:lines "L" do
-    line = M.substitute_template_variables(line, opts.client, opts.note)
+    line = M.substitute_template_variables(line, opts.client, opts.note, methods)
     note_file:write(line)
   end
 
@@ -164,8 +176,10 @@ M.insert_template = function(opts)
   local template_file = io.open(tostring(template_path), "r")
   if template_file then
     local lines = template_file:lines()
+
+    local methods = vim.deepcopy(opts.client.opts.templates.substitutions or {})
     for line in lines do
-      local new_lines = M.substitute_template_variables(line, opts.client, note)
+      local new_lines = M.substitute_template_variables(line, opts.client, note, methods)
       if string.find(new_lines, "[\r\n]") then
         local line_start = 1
         for line_end in util.gfind(new_lines, "[\r\n]") do
