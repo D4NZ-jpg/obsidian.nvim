@@ -380,6 +380,8 @@ This is a complete list of all of the options that can be passed to `require("ob
     folder = "templates",
     date_format = "%Y-%m-%d",
     time_format = "%H:%M",
+    -- A key to be look for in the frontmatter indicating the default folder when creating a new file from a template
+    output_dir_key = "target_dir",
     -- A map for custom variables, the key should be the variable and the value a function
     substitutions = {},
   },
@@ -593,7 +595,6 @@ config = {
 
 obsidian.nvim also supports "dynamic" workspaces. These are simply workspaces where the `path` is set to a Lua function (that returns a path) instead of a hard-coded path. This can be useful in several scenarios, such as when you want a workspace whose `path` is always set to the parent directory of the current buffer:
 
-
 ```lua
 config = {
   workspaces = {
@@ -725,6 +726,29 @@ templates = {
   }
 }
 ```
+
+### Output Directory Key
+
+You can specify a key in the frontmatter of your templates to indicate the output directory when creating a new file from a template. Add the following configuration:
+
+```lua
+{
+  -- other fields ...
+  templates = {
+    output_dir_key = "target_dir",
+  }
+}
+```
+
+If a template includes the frontmatter key `target_dir`, its value will be used as the default folder for new files created from that template. For example:
+
+```yaml
+---
+target_dir: "projects/configs"
+---
+```
+
+When using `:ObsidianNewFromTemplate` with this template, the new file will default to the `projects/configs` directory unless overridden by the user.
 
 ### Usage outside of a workspace or vault
 
