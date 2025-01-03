@@ -387,6 +387,7 @@ end
 ---@class obsidian.config.TemplateOpts
 ---
 ---@field folder string|obsidian.Path|?
+---@field output_dir_key string |obsidian.Path|?
 ---@field date_format string|?
 ---@field time_format string|?
 ---@field substitutions table<string, function|string>|?
@@ -398,6 +399,7 @@ config.TemplateOpts = {}
 config.TemplateOpts.default = function()
   return {
     folder = nil,
+    output_dir_key = nil,
     date_format = nil,
     time_format = nil,
     substitutions = {},

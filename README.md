@@ -728,7 +728,7 @@ templates = {
 
 ### Usage outside of a workspace or vault
 
-It's possible to configure obsidian.nvim to work on individual markdown files outside of a regular workspace / Obsidian vault by configuring a "dynamic" workspace. To do so you just need to add a special workspace with a function for the `path` field (instead of a string), which should return a *parent* directory of the current buffer. This tells obsidian.nvim to use that directory as the workspace `path` and `root` (vault root) when the buffer is not located inside another fixed workspace.
+It's possible to configure obsidian.nvim to work on individual markdown files outside of a regular workspace / Obsidian vault by configuring a "dynamic" workspace. To do so you just need to add a special workspace with a function for the `path` field (instead of a string), which should return a _parent_ directory of the current buffer. This tells obsidian.nvim to use that directory as the workspace `path` and `root` (vault root) when the buffer is not located inside another fixed workspace.
 
 For example, to extend the configuration above this way:
 
