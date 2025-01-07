@@ -85,7 +85,7 @@ M.substitute_template_variables = function(text, client, note, methods)
       if type(subst) == "string" then
         value = subst
       else
-        value = subst()
+        value = subst(client)
         -- cache the result
         methods[key] = value
       end
@@ -102,7 +102,7 @@ M.substitute_template_variables = function(text, client, note, methods)
 
     local value
     if type(methods[key]) == "function" then
-      value = methods[key]()
+      value = methods[key](client)
     else
       value = methods[key]
     end
