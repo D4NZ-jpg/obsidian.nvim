@@ -12,7 +12,7 @@ return function(client, data)
   ---@type string|?
   local default_name
   if client.opts.attachments.img_name_func then
-    default_name = client.opts.attachments.img_name_func()
+    default_name = client.opts.attachments.img_name_func(client:current_note())
   end
 
   local path = paste_img {
